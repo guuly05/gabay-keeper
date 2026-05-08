@@ -12,10 +12,8 @@ The application was created as a cultural preservation tool. Somali poetry has h
 - [Technology Stack](#technology-stack)
 - [Architecture](#architecture)
 - [Security Model](#security-model)
-- [Firebase Storage Notice](#firebase-storage-notice)
 - [Local Setup](#local-setup)
 - [Firebase Setup](#firebase-setup)
-- [Environment Variables](#environment-variables)
 - [Running the App](#running-the-app)
 - [Deployment](#deployment)
 - [Project Structure](#project-structure)
@@ -186,41 +184,6 @@ Poem creation validates:
 
 Footnotes are stored under each poem and inherit ownership from the parent poem. Only the poem owner can add footnotes, and footnote text is size-limited.
 
-### Secrets
-
-The following files and key types must not be committed:
-
-- `.env`
-- Firebase service account JSON files
-- Admin SDK credentials
-- Private API keys
-- `firebase-applet-config.json`
-
-The repository includes `.env.example` and `firebase-applet-config.example.json` as safe templates.
-
-## Firebase Storage Notice
-
-Firebase Storage is not required for the core app.
-
-This project originally included optional voice memo uploads, but Firebase now requires the pay-as-you-go Blaze plan to provision new Cloud Storage for Firebase buckets. Because of that, the live app currently keeps the archive focused on Firestore text records and does not expose Firebase Storage upload controls.
-
-The included `storage.rules` file is a future-ready template if you later enable Firebase Storage. It restricts audio files to the authenticated owner path:
-
-```text
-audioMemos/{userId}/{fileName}
-```
-
-### No-cost alternatives for audio
-
-If you want voice memo support without Firebase Storage, consider:
-
-- Store only external audio links in Firestore, such as YouTube, Internet Archive, SoundCloud, or a public institutional archive.
-- Use GitHub Releases for a small curated demo dataset, then save release asset URLs in Firestore.
-- Use Supabase Storage if its free tier fits your needs.
-- Use Cloudinary for small media demos, subject to its current free-tier limits.
-- Keep audio out of the first public version and add it later when the archive has a clearer hosting plan.
-
-For the current GitHub launch, the safest option is to ship without uploads and describe audio as planned future work.
 
 ## Local Setup
 
@@ -244,35 +207,10 @@ npm install
 2. Enable Authentication.
 3. Enable Email/Password sign-in.
 4. Create a Firestore database.
-5. Copy `firebase-applet-config.example.json` to `firebase-applet-config.json`.
-6. Fill in your Firebase web app configuration.
-7. Deploy Firestore rules:
 
-```bash
-npx firebase-tools login
-npx firebase-tools deploy --only firestore:rules --project your-project-id
-```
 
 The current `firebase.json` deploys Firestore rules only. Storage deployment is intentionally not included in the default deploy path because the no-cost launch does not depend on Firebase Storage.
 
-## Environment Variables
-
-Create a local `.env` file if you plan to add backend AI features:
-
-```env
-OPENROUTER_API_KEY=your_server_side_openrouter_key
-APP_URL=http://localhost:3000
-```
-
-Do not use `VITE_OPENROUTER_API_KEY`. Vite exposes `VITE_` variables to the browser bundle.
-
-The current frontend expects any future AI feature to be served through:
-
-```text
-/api/openrouter
-```
-
-That endpoint is not part of this Vite-only frontend and should be implemented in a backend or serverless environment.
 
 ## Running the App
 
@@ -297,37 +235,6 @@ npm run build
 ```
 
 The production build is generated in `dist/`.
-
-### Hosting Options
-
-This app can be hosted on:
-
-- Firebase Hosting
-- Vercel
-- Netlify
-- GitHub Pages with a Vite static build
-- Any static hosting provider
-
-If using GitHub Pages, configure the repository to publish the built `dist` output through a GitHub Actions workflow or another static deployment process.
-
-### Before Publishing to GitHub
-
-Run:
-
-```bash
-npm run lint
-npm run build
-npm audit --omit=dev
-```
-
-Confirm:
-
-- `.env` is not committed.
-- `firebase-applet-config.json` is not committed.
-- Service account files are not committed.
-- Firestore rules are deployed.
-- The OpenRouter key has been rotated if it was ever exposed locally.
-- Firebase Storage is not advertised as available unless you have enabled and secured it.
 
 ## Project Structure
 
@@ -371,8 +278,6 @@ npm run build
 npm audit --omit=dev
 ```
 
-Some audit fixes may require breaking dependency changes. Review those carefully before running `npm audit fix --force`.
-
 ## Roadmap
 
 Potential future improvements:
@@ -390,12 +295,12 @@ Potential future improvements:
 
 ## License
 
-No license has been selected yet. Before publishing publicly, choose a license that matches your intent:
+## License
 
-- MIT for broad open-source reuse
-- Apache-2.0 for permissive reuse with patent language
-- GPL-3.0 if derivative works must remain open source
-- All rights reserved if you do not want reuse without permission
+This project is licensed under the MIT License - see below for details.
+
+[![MIT License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 
 ## Acknowledgments
 
