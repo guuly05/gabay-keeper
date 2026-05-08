@@ -1,0 +1,88 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Poem Validation
+    function isValidPoem(data) {
+      return data.keys().hasAll(['title', 'originalText', 'ownerId', 'createdAt']) &&
+             data.keys().hasOnly([
+               'title',
+               'originalText',
+               'translatedText',
+               'tags',
+               'source',
+               'author',
+               'genre',
+               'xaraf',
+               'audioUrl',
+               'isVerified',
+               'ownerId',
+               'createdAt',
+               'updatedAt'
+             ]) &&
+             data.title is string && data.title.size() <= 200 &&
+             data.originalText is string && data.originalText.size() <= 50000 &&
+             data.ownerId == request.auth.uid &&
+             data.createdAt == request.time &&
+             (!('updatedAt' in data) || data.updatedAt == request.time) &&
+             (!('tags' in data) || (data.tags is list && data.tags.size() <= 25)) &&
+             (!('source' in data) || (data.source is string && data.source.size() <= 2000)) &&
+             (!('author' in data) || (data.author is string && data.author.size() <= 200)) &&
+             (!('genre' in data) || (data.genre is string && data.genre.size() <= 40)) &&
+             (!('xaraf' in data) || (data.xaraf is string && data.xaraf.size() <= 4)) &&
+             (!('audioUrl' in data) || (data.audioUrl is string && data.audioUrl.size() <= 2000)) &&
+             (!('isVerified' in data) || data.isVerified is bool) &&
+             (data.get('translatedText', '') is string && data.get('translatedText', '').size() <= 50000);
+    }
+
+    function isAdminUser() {
+      return isSignedIn() && request.auth.token.admin == true;
+    }
+
+    match /poems/{poemId} {
+      allow get, list: if isOwner(resource.data.ownerId) || isAdminUser();
+      
+      allow create: if isSignedIn() && isValidId(poemId) && isValidPoem(request.resource.data);
+      
+      allow update: if isAdminUser() &&
+                      request.resource.data.ownerId == resource.data.ownerId &&
+                      request.resource.data.createdAt == resource.data.createdAt &&
+                      isValidPoem(request.resource.data) &&
+                      (
+                        request.resource.data.diff(resource.data).affectedKeys().hasAny(['title', 'originalText', 'translatedText', 'tags', 'updatedAt'])
+                      );
+      
+      allow delete: if isAdminUser();
+
+      match /footnotes/{footnoteId} {
+        allow get, list: if isOwner(get(/databases/$(database)/documents/poems/$(poemId)).data.ownerId) || isAdminUser();
+        allow create: if isSignedIn() &&
+                      isOwner(get(/databases/$(database)/documents/poems/$(poemId)).data.ownerId) &&
+                      request.resource.data.keys().hasOnly(['text', 'createdAt', 'userId']) &&
+                      request.resource.data.text is string &&
+                      request.resource.data.text.size() > 0 &&
+                      request.resource.data.text.size() <= 5000 &&
+                      request.resource.data.createdAt == request.time &&
+                      request.resource.data.userId == request.auth.uid;
+        allow update, delete: if false;
+      }
+    }
+  }
+}

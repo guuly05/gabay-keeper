@@ -1,0 +1,59 @@
+{
+  "entities": {
+    "Poem": {
+      "title": "Poem",
+      "description": "A Somali poem (Gabay) record.",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "The title of the poem."
+        },
+        "originalText": {
+          "type": "string",
+          "description": "The original Somali text."
+        },
+        "translatedText": {
+          "type": "string",
+          "description": "The English translation of the poem."
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Categories like bravery, love, diaspora."
+        },
+        "source": {
+          "type": "string",
+          "description": "URL or book title source."
+        },
+        "author": {
+          "type": "string",
+          "description": "The poet's name if known."
+        },
+        "ownerId": {
+          "type": "string",
+          "description": "The UID of the user who archived this poem."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of creation."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of last update."
+        }
+      },
+      "required": ["title", "originalText", "ownerId", "createdAt"]
+    }
+  },
+  "firestore": {
+    "poems": {
+      "schema": "Poem",
+      "description": "Collection of archived poems."
+    }
+  }
+}

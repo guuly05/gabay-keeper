@@ -1,0 +1,12 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^python -c 'from pathlib import Path; import json; p = Path\\(\"C:/Users/THINKPAD/Videos/gabay-keeper second version/package-lock\\.json\"\\); d = json\\.loads\\(p\\.read_text\\(encoding=\"utf-8\"\\)\\); root = d\\.get\\(\"packages\", \\{\\}\\)\\.get\\(\"\", \\{\\}\\); root\\.get\\(\"dependencies\", \\{\\}\\)\\.pop\\(\"@google/genai\", None\\); d\\.get\\(\"packages\", \\{\\}\\)\\.pop\\(\"node_modules/@google/genai\", None\\); p\\.write_text\\(json\\.dumps\\(d, indent=2\\), encoding=\"utf-8\"\\)'$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^python -c \"print\\('hello'\\)\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}
