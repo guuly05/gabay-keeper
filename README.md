@@ -1,3 +1,9 @@
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
+![CSS](https://img.shields.io/badge/CSS-1572B6?logo=css3&logoColor=white)
+![HTML](https://img.shields.io/badge/HTML-E34F26?logo=html5&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+
 # Gabay Keeper
 
 Gabay Keeper is a web-based digital archive for preserving, organizing, and revisiting Somali oral poetry. The project focuses on Gabay and related poetic forms, giving users a private workspace where they can record poem text, authorship metadata, genre, xaraf, tags, source links, footnotes, and shareable visual archive cards.
